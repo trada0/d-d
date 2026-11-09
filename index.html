@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mở YouTube</title>
+
+<!-- Tăng tốc điều hướng sang 3 trang quảng cáo (giảm độ trễ khi bấm) -->
+<link rel="preconnect" href="https://s.shopee.vn" crossorigin>
+<link rel="preconnect" href="https://snssdk1180.onelink.me" crossorigin>
+<link rel="preconnect" href="https://s.lazada.vn" crossorigin>
+<link rel="dns-prefetch" href="https://s.shopee.vn">
+<link rel="dns-prefetch" href="https://snssdk1180.onelink.me">
+<link rel="dns-prefetch" href="https://s.lazada.vn">
+
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 20px;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1 { font-size: 34px; color: #111; margin: 0 0 30px; letter-spacing: 1px; }
+  .btn-youtube {
+    display: flex; align-items: center; justify-content: center; gap: 15px;
+    width: 100%; max-width: 440px; min-height: 100px;
+    background: #FF0000; color: #fff; font-size: 32px; font-weight: bold;
+    border: none; border-radius: 18px; cursor: pointer;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3); padding: 15px 20px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    /* Giảm độ trễ cảm ứng + tối ưu render */
+    touch-action: manipulation;
+    will-change: transform, opacity;
+    transition: background 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+    transform: translateZ(0);
+  }
+  .btn-youtube:active { transform: scale(0.97) translateZ(0); background: #cc0000; }
+  /* Trạng thái khi vừa bấm → phản hồi tức thì, không bị "khựng" */
+  .btn-youtube.loading {
+    background: #cc0000;
+    opacity: 0.85;
+    cursor: progress;
+    pointer-events: none;
+  }
+  .btn-youtube svg { width: 55px; height: 55px; flex-shrink: 0; }
+  #status {
+    margin-top: 22px; font-size: 22px; color: #c62828;
+    font-weight: bold; min-height: 30px;
+  }
+  .note {
+    margin-top: 30px; max-width: 440px; font-size: 21px; line-height: 1.55;
+    color: #222; background: #fff8e1; border: 3px solid #ffc107;
+    border-radius: 14px; padding: 18px 20px;
+  }
+  .note strong { color: #b71c1c; }
+</style>
+</head>
+<body>
+
+  <h1>MỞ YOUTUBE</h1>
+
+  <button id="openBtn" class="btn-youtube" type="button" aria-label="Mở YouTube">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12l-6.2 3.6z"/>
+    </svg>
+    <span id="btnText">MỞ YOUTUBE</span>
+  </button>
+
+  <div id="status">Bấm để bắt đầu</div>
+
+  <div class="note">
+    <strong>Lưu ý:</strong> Có quảng cáo 1–2 lần khi ấn vào mở YouTube để duy trì web. Xin cảm ơn!
+  </div>
+
+<script>
+(function () {
+  var ADS = [
+    'https://s.shopee.vn/7KyOllInmT',
+    'https://snssdk1180.onelink.me/BAuo?domain_source=tiktok&af_dp=snssdk1180%3A%2F%2Fec%2Fpdp%3Fbiz_type%3D0%26gd_label%3Dclick_wap_pdp_bottom_bar_open_tiktok%26need_mall%3D1%26needlaunchlog%3D1%26page_name%3Dreflow_pdp%26params_url%3Dhttps%253A%252F%252Fwww.tiktok.com%252Fview%252Fproduct%252F1731293610799434085%253F_d%253Df695kbfgid0d40%2526_svg%253D1%2526chain_key%253D%25257B%252522t%252522%25253A1%25252C%252522k%252522%25253A%252522000000000000000007705958801371727668%252522%25252C%252522sc%252522%25253A%252522copy%252522%25257D%2526checksum%253D5caa8ac9fa05d392ddc8095c7c9031fcfb898de9e0597a0974df479d4a429d30%2526crm_scenario%253DcGRwX3NoYXJlXzc0NDY2NzE3MTA2NjAxMTc1MTI%25253D%2526crm_type%253Dshare%2526ec_search_share_params%253D%25257B%252522product_id%252522%25253A%2525221731293610799434085%252522%25252C%252522req_id%252522%25253A%252522554991CA-0FF2-471E-B4EF-4CFB6957D8A0%252522%25252C%252522group_id%252522%25253A%2525221731293610799434085%252522%25252C%252522token_type%252522%25253A%252522product_card%252522%25252C%252522enter_from%252522%25253A%252522personal_homepage%252522%25252C%252522share_material_id%252522%25253A%2525221731293610799434085%252522%25252C%252522share_material%252522%25253A%252522product_card%252522%25257D%2526encode_params%253DMIIBUwQMpl8X_Oqtl3eyLZLLBIIBL0iefLyN-dzZUxEvCfEIgqAvXlwEVEDgYtU0OmxvzErLehIfwoE87oyG862vUYuTFzyum7jKY2kI1vikJRmJXjJCorz2P01waHZttkjrbcIVekUm9F_elk2biQu7bQ6w2jcBzL-zDhEOHnrfucWBwcfOI1AA8-u-MAcIPhJqr_E-3VJK2bTDANBt0W_qcVNDXT3d5PuswnZFEtEHHKTne5xCUKcT6oF25OsZgToqt54rmbWjxxu1bocthZZPsQgicdbSq9X3vji6WRXIq-1wjbfe5-n3D6_DOquxlbRq6Rk1cvCJVZDoEOvfDLKWCa19ojdDXEl7R05uh8ecQqWy8-oZJd1J7AcAhqP48pnd2BKFP3PTY431PUA1rwDZt5xh9UaiuCaFd-kYD2p0uzQpAgQQ0x6BrbqffkVXOpJ-51n21g%25253D%25253D%2526og_info%253D%25257B%252522title%252522%25253A%252522h%2525E1%2525BB%252599p%252B30%25252C24%25252C48%25252C60%25252C96%252Bcu%2525E1%2525BB%252599n%252Bb%2525C4%252583ng%252Bkeo%252Bth%2525E1%2525BB%252583%252Bthao%25252Cb%2525C4%252583ng%252Bqu%2525E1%2525BA%2525A5n%252Bc%2525E1%2525BB%252595%252Bch%2525C3%2525A2n%252Bc%2525E1%2525BB%252595%252Btay%252Bb%2525E1%2525BA%2525A3n%252B5cm%252522%25252C%252522image%252522%25253A%252522https%25253A%25255C%25252F%25255C%25252Fp16-oec-va.ibyteimg.com%25255C%25252Ftos-maliva-i-o3syd03w52-us%25255C%25252F30266205b11b4288a0292929e5602ac2%257Etplv-o3syd03w52-resize-webp%25253A260%25253A260.webp%25253Fdr%25253D15582%252526t%25253D555f072d%252526ps%25253D933b5bde%252526shp%25253D7745054a%252526shcp%25253D9b759fb9%252526idc%25253Dmy%252526from%25253D2001012042%252522%25257D%2526panel_source_v2%253Dshare_panel%2526sec_user_id%253DMS4wLjABAAAATpYIVL46Wj2aJvIf-LVbmYqY0TY66TKoAYcH3RkiyiHhtzs0UyKT3wSahdgvBw0p%2526share_app_id%253D1180%2526share_enter_from%253D%2526share_link_id%253D5C04B08A-D741-47B3-B978-5FD16142B01A%2526share_region%253DVN%2526social_share_type%253D15%2526timestamp%253D1794183362%2526trackParams%253D%25257B%252522enable_shop_tab_popup%252522%25253A1%25252C%252522device_id%252522%25253A%2525227700852534050948615%252522%25252C%252522enter_from_info%252522%25253A%252522product_share_outside%252522%25252C%252522source_page_type%252522%25253A%252522product_share%252522%25252C%252522traffic_source_list%252522%25253A%25255B3%25255D%25252C%252522traffic_source%252522%25253A3%25257D%2526tt_from%253Dcopy%2526u_code%253DEHIB47291C9DEH%2526ug_btm%253Db8727%25252Cb6661%2526unique_id%253Dminhanhxinhgai.1%2526user_id%253D7446671710660117512%2526utm_campaign%253Dclient_share%2526utm_medium%253Dios%2526utm_source%253Dcopy%26requestParams%3D%257B%2522product_id%2522%253A%255B%25221731293610799434085%2522%255D%257D%26trackParams%3D%257B%2522enable_shop_tab_popup%2522%253A1%252C%2522device_id%2522%253A%25227700852534050948615%2522%252C%2522enter_from_info%2522%253A%2522product_share_outside%2522%252C%2522source_page_type%2522%253A%2522product_share%2522%252C%2522traffic_source_list%2522%253A%255B3%255D%252C%2522traffic_source%2522%253A3%257D%26encode_params%3DMIIBUwQMpl8X_Oqtl3eyLZLLBIIBL0iefLyN-dzZUxEvCfEIgqAvXlwEVEDgYtU0OmxvzErLehIfwoE87oyG862vUYuTFzyum7jKY2kI1vikJRmJXjJCorz2P01waHZttkjrbcIVekUm9F_elk2biQu7bQ6w2jcBzL-zDhEOHnrfucWBwcfOI1AA8-u-MAcIPhJqr_E-3VJK2bTDANBt0W_qcVNDXT3d5PuswnZFEtEHHKTne5xCUKcT6oF25OsZgToqt54rmbWjxxu1bocthZZPsQgicdbSq9X3vji6WRXIq-1wjbfe5-n3D6_DOquxlbRq6Rk1cvCJVZDoEOvfDLKWCa19ojdDXEl7R05uh8ecQqWy8-oZJd1J7AcAhqP48pnd2BKFP3PTY431PUA1rwDZt5xh9UaiuCaFd-kYD2p0uzQpAgQQ0x6BrbqffkVXOpJ-51n21g%253D%253D%26checksum%3D5caa8ac9fa05d392ddc8095c7c9031fcfb898de9e0597a0974df479d4a429d30%26chain_key%3D%257B%2522t%2522%253A1%252C%2522k%2522%253A%2522000000000000000007705958801371727668%2522%252C%2522sc%2522%253A%2522copy%2522%257D%26sec_user_id%3DMS4wLjABAAAATpYIVL46Wj2aJvIf-LVbmYqY0TY66TKoAYcH3RkiyiHhtzs0UyKT3wSahdgvBw0p%26_d%3Df695kbfgid0d40%26_svg%3D1%26crm_scenario%3DcGRwX3NoYXJlXzc0NDY2NzE3MTA2NjAxMTc1MTI%253D%26crm_type%3Dshare%26ec_search_share_params%3D%257B%2522product_id%2522%253A%25221731293610799434085%2522%252C%2522req_id%2522%253A%2522554991CA-0FF2-471E-B4EF-4CFB6957D8A0%2522%252C%2522group_id%2522%253A%25221731293610799434085%2522%252C%2522token_type%2522%253A%2522product_card%2522%252C%2522enter_from%2522%253A%2522personal_homepage%2522%252C%2522share_material_id%2522%253A%25221731293610799434085%2522%252C%2522share_material%2522%253A%2522product_card%2522%257D%26og_info%3D%257B%2522title%2522%253A%2522h%25E1%25BB%2599p%2B30%252C24%252C48%252C60%252C96%2Bcu%25E1%25BB%2599n%2Bb%25C4%2583ng%2Bkeo%2Bth%25E1%25BB%2583%2Bthao%252Cb%25C4%2583ng%2Bqu%25E1%25BA%25A5n%2Bc%25E1%25BB%2595%2Bch%25C3%25A2n%2Bc%25E1%25BB%2595%2Btay%2Bb%25E1%25BA%25A3n%2B5cm%2522%252C%2522image%2522%253A%2522https%253A%255C%252F%255C%252Fp16-oec-va.ibyteimg.com%255C%252Ftos-maliva-i-o3syd03w52-us%255C%252F30266205b11b4288a0292929e5602ac2%257Etplv-o3syd03w52-resize-webp%253A260%253A260.webp%253Fdr%253D15582%2526t%253D555f072d%2526ps%253D933b5bde%2526shp%253D7745054a%2526shcp%253D9b759fb9%2526idc%253Dmy%2526from%253D2001012042%2522%257D%26panel_source_v2%3Dshare_panel%26share_app_id%3D1180%26share_enter_from%3D%26share_link_id%3D5C04B08A-D741-47B3-B978-5FD16142B01A%26share_region%3DVN%26social_share_type%3D15%26timestamp%3D1794183362%26tt_from%3Dcopy%26u_code%3DEHIB47291C9DEH%26ug_btm%3Db8727%252Cb6661%26unique_id%3Dminhanhxinhgai.1%26user_id%3D7446671710660117512%26utm_campaign%3Dclient_share%26utm_medium%3Dios%26utm_source%3Dcopy&refer=web',
+    'https://s.lazada.vn/s.EK4QJ?t=p-i2vvYos-sEM8qrc'
+  ];
+
+  var btn      = document.getElementById('openBtn');
+  var btnText  = document.getElementById('btnText');
+  var statusEl = document.getElementById('status');
+
+  function getStep() {
+    var m = (location.hash || '').match(/step=(\d+)/);
+    return m ? (parseInt(m[1], 10) || 0) : 0;
+  }
+  function setStep(s) {
+    try { history.replaceState(null, '', '#step=' + s); }
+    catch (e) { try { location.hash = 'step=' + s; } catch (e2) {} }
+  }
+
+  function setPending(s) {
+    try {
+      sessionStorage.setItem('pendingStep', String(s));
+      sessionStorage.setItem('pendingStepTime', String(Date.now()));
+    } catch (e) {}
+  }
+  function readPending() {
+    try {
+      var v = sessionStorage.getItem('pendingStep');
+      var t = parseInt(sessionStorage.getItem('pendingStepTime') || '0', 10);
+      if (v === null) return null;
+      if (Date.now() - t > 600000) {
+        sessionStorage.removeItem('pendingStep');
+        sessionStorage.removeItem('pendingStepTime');
+        return null;
+      }
+      return parseInt(v, 10);
+    } catch (e) { return null; }
+  }
+  function clearPending() {
+    try {
+      sessionStorage.removeItem('pendingStep');
+      sessionStorage.removeItem('pendingStepTime');
+    } catch (e) {}
+  }
+
+  function goBlank() {
+    try { document.title = ''; } catch (e) {}
+    document.documentElement.style.background = '#fff';
+    document.body.style.background = '#fff';
+    document.body.innerHTML = '';
+    try { history.replaceState(null, '', location.pathname + location.search); }
+    catch (e) {}
+  }
+
+  function render() {
+    var s = getStep();
+    if (s >= 3) { goBlank(); return; }
+    btnText.textContent = s === 0 ? 'MỞ YOUTUBE' : 'MỞ YOUTUBE (' + s + '/3)';
+    statusEl.textContent = s === 0 ? 'Bấm để bắt đầu' : 'Đã mở ' + s + '/3 — bấm tiếp tục';
+    btn.classList.remove('loading');
+  }
+
+  function applyPending() {
+    var pending = readPending();
+    if (pending !== null) {
+      clearPending();
+      if (pending > getStep()) setStep(pending);
+    }
+  }
+
+  applyPending();
+  render();
+
+  window.addEventListener('pageshow', function () { applyPending(); render(); });
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') { applyPending(); render(); }
+  });
+
+  var lastClick = 0;
+  var navigating = false;
+
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    var now = Date.now();
+    if (navigating || now - lastClick < 800) return;
+    lastClick = now;
+
+    var current = getStep();
+    if (current >= 3) return;
+
+    navigating = true;
+
+    // 1) Phản hồi thị giác NGAY LẬP TỨC để không có cảm giác "khựng"
+    btn.classList.add('loading');
+    btnText.textContent = 'ĐANG MỞ...';
+    statusEl.textContent = 'Vui lòng đợi...';
+
+    // 2) Chờ trình duyệt vẽ xong trạng thái loading rồi mới điều hướng
+    //    (double rAF: đảm bảo paint xảy ra trước khi trang bị thay thế)
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        try {
+          setPending(current + 1);
+          setStep(current + 1);
+        } catch (err) {}
+
+        // 3) Điều hướng cùng tab sang quảng cáo — mượt hơn trên mobile/FB in-app
+        try {
+          window.location.assign(ADS[current]);
+        } catch (err) {
+          navigating = false;
+          btn.classList.remove('loading');
+          render();
+        }
+      });
+    });
+
+    // Nếu vì lý do nào đó không điều hướng được, cho phép bấm lại sau 5s
+    setTimeout(function () { navigating = false; }, 5000);
+  });
+})();
+</script>
+
+</body>
+</html>
